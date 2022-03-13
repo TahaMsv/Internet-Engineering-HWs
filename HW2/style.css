@@ -118,7 +118,8 @@ body {
     /* box-shadow: 5px 5px 5px 5px  #191919; */
 }
 
-.left-card {
+.left-card,
+.right-card {
     margin-top: 50px;
     padding: 0px 20px;
 }
@@ -145,6 +146,7 @@ body {
     align-items: center;
     flex-direction: center;
     margin: 20px 0px;
+    font-weight: bold;
 }
 
 .left-card>div:hover {
@@ -161,6 +163,42 @@ body {
     background-size: 30px;
     background-position: 50% 50%;
     border-radius: 100px;
+}
+
+.right-card>form>div {
+    background-color: rgb(255, 255, 255, 0);
+}
+
+.right-card>form>div>input,
+textarea {
+    border-radius: 20px;
+    border: solid black;
+    background-color: rgb(255, 255, 255, 0);
+    padding: 12px 10px;
+    margin: 5px 0px;
+    outline: none;
+}
+
+.right-card>form>div>textarea {
+    height: 130px;
+}
+
+.right-card>form>div>input::placeholder,
+textarea::placeholder {
+    color: black;
+    opacity: 1;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#submit-btton {
+    width: 110px;
+    height: 42px;
+    background-color: #f1b717;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 40px;
+    border: none;
 }
 
 
