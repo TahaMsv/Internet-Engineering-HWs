@@ -1,0 +1,91 @@
+:root {
+  --white: white;
+  --blue: rgb(67, 140, 223);
+  --black: rgb(0, 0, 0);
+  --yellow: #f1b717;
+  --grey: rgb(63, 63, 63);
+  --orange: #ff8800;
+}
+* {
+  font-family: sans-serif;
+  padding: 0;
+  margin: 0;
+}
+body {
+}
+
+.navbar { 
+}
+.drop-down {
+  
+}
+
+.item {
+  
+}
+.item:hover {
+}
+.item.active {
+}
+.item.bordered {
+  
+}
+.navbar-items {
+  
+}
+
+.navbar img {
+  
+}
+.icon-burger {
+  
+}
+.icon-burger .line {
+  
+}
+.body-cards {
+  
+}
+.left-card {
+  
+}
+.right-card {
+  
+}
+.right-card img {
+  
+}
+
+.title {
+  
+}
+.main-body {
+}
+
+.data {
+  
+}
+
+
+input[type="text"] {
+}
+input[type="submit"] {
+}
+
+input[type="submit"]:hover {
+ 
+}
+
+input[type="text"]:focus {
+ 
+}
+
+textarea {
+}
+
+textarea:focus {
+}
+::placeholder {
+}
+
+
