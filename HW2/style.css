@@ -147,6 +147,11 @@ body {
     margin: 20px 0px;
 }
 
+.left-card>div:hover {
+    transform: scale(1.05);
+    -webkit-transition: transform 0.5s ease-out;
+}
+
 .left-card>div>.logo {
     background-color: white;
     filter: invert(1);
