@@ -1,0 +1,226 @@
+:root {
+    --white: white;
+    --blue: rgb(67, 140, 223);
+    --black: rgb(0, 0, 0);
+    --yellow: #f1b717;
+    --grey: rgb(63, 63, 63);
+    --orange: #ff8800;
+}
+
+* {
+    font-family: sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-image: url('assets/pic.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    padding: 5px 100px;
+}
+
+.navbar {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    grid-template-columns: 80px auto 80px;
+    gap: 10px;
+    height: 70px;
+    border-radius: 15px;
+    gap: 10px;
+    background-color: white;
+    padding: 3px 20px;
+    margin-top: 50px;
+}
+
+.navbar>div {
+    height: 70px;
+}
+
+.navbar>.navbar_logo {
+    background-color: white;
+    background-image: url('assets/sbu-logo.png');
+    background-repeat: no-repeat;
+    width: 70px;
+    height: 70px;
+    background-size: 70px;
+}
+
+.navbar>.navbar_menu {
+    display: none;
+}
+
+.flex-container {
+    display: flex;
+    height: 70px;
+    width: 100;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: center;
+    align-items: center;
+}
+
+.flex-container>div {
+    margin: 5px;
+    text-align: center;
+    line-height: 75px;
+    font-size: 30px;
+}
+
+.flex-container a {
+    color: black;
+    text-align: center;
+    padding: 10px 12px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.flex-container a:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.flex-container a.active {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+}
+
+.flex-container a.underline {
+    border-bottom: 3px solid yellow;
+}
+
+.item1 {
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+
+.main-body {
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.main-body>div {
+    width: 400px;
+    height: 450px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(7px);
+    margin: 20px 20px;
+    border-radius: 20px;
+    /* box-shadow: 5px 5px 5px 5px  #191919; */
+}
+
+.left-card {
+    margin-top: 50px;
+    padding: 0px 20px;
+}
+
+.left-card>h2 {
+    margin-top: 50px;
+}
+
+.left-card>ul>li {
+    display: inline-block;
+}
+
+.left-card>ul>li>div {
+    background-color: rgba(138, 39, 39, 1);
+}
+
+.left-card>div {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 80px auto;
+    gap: 10px;
+    height: 70px;
+    gap: 10px;
+    background-color: white;
+    align-items: center;
+    /* justify-content: center; */
+}
+
+
+/*
+.navbar { 
+}
+.drop-down {
+  
+}
+
+.item {
+  
+}
+.item:hover {
+}
+.item.active {
+}
+.item.bordered {
+  
+}
+.navbar-items {
+  
+}
+
+.navbar img {
+  
+}
+.icon-burger {
+  
+}
+.icon-burger .line {
+  
+}
+.body-cards {
+  
+}
+.left-card {
+  
+}
+.right-card {
+  
+}
+.right-card img {
+  
+}
+
+.title {
+  
+}
+.main-body {
+}
+
+.data {
+  
+}
+
+
+input[type="text"] {
+}
+input[type="submit"] {
+}
+
+input[type="submit"]:hover {
+ 
+}
+
+input[type="text"]:focus {
+ 
+}
+
+textarea {
+}
+
+textarea:focus {
+}
+::placeholder {
+}
+
+*/

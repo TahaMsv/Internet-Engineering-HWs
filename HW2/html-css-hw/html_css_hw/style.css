@@ -12,6 +12,10 @@
   margin: 0;
 }
 body {
+    background-image: url('./assets/pic.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 .navbar { 
