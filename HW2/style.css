@@ -47,10 +47,6 @@ body {
     background-size: 70px;
 }
 
-.navbar>.navbar_menu {
-    display: none;
-}
-
 .flex-container {
     display: flex;
     height: 70px;
@@ -69,7 +65,8 @@ body {
     font-size: 30px;
 }
 
-.flex-container a {
+.flex-container a,
+.drop-down a {
     color: black;
     text-align: center;
     padding: 10px 12px;
@@ -77,18 +74,19 @@ body {
     font-size: 17px;
 }
 
-.flex-container a:hover {
+.flex-container a:hover,
+.drop-down a:hover {
     opacity: 0.5;
     cursor: pointer;
 }
 
-.flex-container a.active {
+a.active {
     background-color: black;
     color: white;
     border-radius: 5px;
 }
 
-.flex-container a.underline {
+a.underline {
     border-bottom: 3px solid yellow;
 }
 
@@ -97,7 +95,35 @@ body {
     grid-row-end: 3;
 }
 
-.main-body {
+.navbar>.navbar_menu {
+    position: relative;
+    display: none;
+}
+
+.menu-icon {
+    height: 30px;
+    width: 35px;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.menu-icon:active {
+    background-color: blue;
+}
+
+.menu-icon>div {
+    width: 35px;
+    height: 5px;
+    background-color: #f1b717;
+    margin: 6px auto;
+}
+
+.main-body,
+.drop-down {
     display: flex;
     flex-wrap: wrap;
     border-radius: 15px;
@@ -105,43 +131,54 @@ body {
     justify-content: center;
     flex-direction: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .main-body>div {
-    width: 400px;
+    width: 420px;
     height: 420px;
     background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(7px);
     margin: 20px 20px;
     border-radius: 20px;
-    /* box-shadow: 5px 5px 5px 5px  #191919; */
+    padding: 0px 20px;
 }
 
-.left-card,
-.right-card {
-    margin-top: 50px;
+.drop-down {
+    display: none;
+}
+
+.drop-down>div {
+    width: 420px;
+    height: 250px;
+    background-color: white;
+    margin: 20px 20px;
+    border-radius: 20px;
     padding: 0px 20px;
+}
+
+.drop-down>div>div {
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    text-align: center;
+    padding: 0px 20px;
+    grid-template-rows: auto;
+    grid-template-columns: 100px;
+    gap: 10px;
+    align-items: center;
+    flex-direction: center;
+    margin: 10px 80px;
 }
 
 .left-card>h2 {
     margin-top: 50px;
 }
 
-.left-card>ul>li {
-    display: inline-block;
-}
-
-.left-card>ul>li>div {
-    background-color: rgba(138, 39, 39, 1);
-}
-
 .left-card>div {
     display: grid;
     grid-template-rows: auto auto;
     grid-template-columns: 100px auto;
-    gap: 10px;
-    height: 70px;
     gap: 10px;
     align-items: center;
     flex-direction: center;
@@ -176,11 +213,11 @@ body {
     margin-top: 10px;
 }
 
-.right-card>form>div {
+#form>div {
     background-color: rgb(255, 255, 255, 0);
 }
 
-.right-card>form>div>input,
+#form>div>input,
 textarea {
     border-radius: 20px;
     border: solid black;
@@ -192,11 +229,15 @@ textarea {
     transition: width 1s;
 }
 
-.right-card>form>div>textarea {
+#form {
+    margin: 0px 30px;
+}
+
+#form>div>textarea {
     height: 130px;
 }
 
-.right-card>form>div>input::placeholder,
+#form>div>input::placeholder,
 textarea::placeholder {
     color: black;
     opacity: 1;
@@ -204,7 +245,7 @@ textarea::placeholder {
     font-weight: bold;
 }
 
-.right-card>form>div>input:focus,
+#form>div>input:focus,
 textarea:focus {
     width: calc(90%);
 }
@@ -218,86 +259,19 @@ textarea:focus {
     border-radius: 40px;
     border: none;
     transition: background-color 0.5s;
+    padding: 12px 10px;
+    margin-left: 30px;
 }
 
 #submit-btton:hover {
     background-color: #4373ae;
 }
 
-
-/*
-.navbar { 
+@media screen and (max-width: 800px) {
+    .navbar>.navbar_menu {
+        display: inline;
+    }
+    .navbar>.flex-container>div {
+        display: none;
+    }
 }
-.drop-down {
-  
-}
-
-.item {
-  
-}
-.item:hover {
-}
-.item.active {
-}
-.item.bordered {
-  
-}
-.navbar-items {
-  
-}
-
-.navbar img {
-  
-}
-.icon-burger {
-  
-}
-.icon-burger .line {
-  
-}
-.body-cards {
-  
-}
-.left-card {
-  
-}
-.right-card {
-  
-}
-.right-card img {
-  
-}
-
-.title {
-  
-}
-.main-body {
-}
-
-.data {
-  
-}
-
-
-input[type="text"] {
-}
-input[type="submit"] {
-}
-
-input[type="submit"]:hover {
- 
-}
-
-input[type="text"]:focus {
- 
-}
-
-textarea {
-}
-
-textarea:focus {
-}
-::placeholder {
-}
-
-*/
