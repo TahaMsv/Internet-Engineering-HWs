@@ -97,6 +97,13 @@ a.underline {
 
 .navbar>.navbar_menu {
     position: relative;
+    line-height: 70px;
+}
+
+.navbar_menu>label {
+    color: #f1b717;
+    margin-left: 30px;
+    font-size: 30px;
     display: none;
 }
 
@@ -145,6 +152,10 @@ a.underline {
 }
 
 .drop-down {
+    display: none;
+}
+
+#toggle {
     display: none;
 }
 
@@ -273,5 +284,11 @@ textarea:focus {
     }
     .navbar>.flex-container>div {
         display: none;
+    }
+    .navbar_menu>label {
+        display: inline;
+    }
+    #toggle:checked+.drop-down {
+        display: flex;
     }
 }
