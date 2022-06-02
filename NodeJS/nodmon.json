@@ -1,0 +1,6 @@
+{
+    "env": {
+        "MONGO_ATLAS_UN": "test",
+        "MONGO_ATLAS_PW": "test"
+    }
+}
