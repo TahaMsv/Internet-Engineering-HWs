@@ -11,7 +11,7 @@ const connectionRequestsRoutes = require("./api/routes/connection_requests");
 const joinRequestsRoutes = require("./api/routes/join_requests");
 
 
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/chatMessenger');
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -32,7 +32,7 @@ app.use((req, res, next) => {
 
 app.use("/groups", grouupsRoutes);
 app.use("/chats", chatsRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/v1/auth", authRoutes);
 app.use("/connection_requests", connectionRequestsRoutes);
 app.use("/join_requests", joinRequestsRoutes);
 

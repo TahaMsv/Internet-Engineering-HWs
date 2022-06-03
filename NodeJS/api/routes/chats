@@ -1,25 +1,25 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-    res.status(200).json({
-        "message": "handling Get requests in chats"
-    });
-});
+// router.get("/", (req, res, next) => {
+//     res.status(200).json({
+//         "message": "handling Get requests in chats"
+//     });
+// });
 
-router.get("/:user_id", (req, res, next) => {
+// router.get("/:user_id", (req, res, next) => {
 
-    const id = req.params.id;
-    res.status(200).json({
-        "message": "handling Get requests in chats/{id}"
-    });
-});
+//     const id = req.params.id;
+//     res.status(200).json({
+//         "message": "handling Get requests in chats/{id}"
+//     });
+// });
 
-router.post("/:user_id", (req, res, next) => {
-    res.status(200).json({
-        "message": "handling post requests in chats/{user_id}"
-    });
-});
+// router.post("/:user_id", (req, res, next) => {
+//     res.status(200).json({
+//         "message": "handling post requests in chats/{user_id}"
+//     });
+// });
 
 
 module.exports = router;

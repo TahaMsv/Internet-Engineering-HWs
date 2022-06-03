@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-    res.status(200).json({
-        "message": "handling Get requests in connection_requests"
-    });
-});
+// router.get("/", (req, res, next) => {
+//     res.status(200).json({
+//         "message": "handling Get requests in connection_requests"
+//     });
+// });
 
-router.post("/", (req, res, next) => {
-    res.status(200).json({
-        "message": "handling Post requests in connection_requests"
-    });
-});
+// router.post("/", (req, res, next) => {
+//     res.status(200).json({
+//         "message": "handling Post requests in connection_requests"
+//     });
+// });
 
 
 router.post("/accept", (req, res, next) => {

@@ -1,54 +1,62 @@
 const express = require("express");
 const router = express.Router();
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-const CreateGroup = require("../../models/createGroup");
+const User = require("../../models/user");
+const Group = require("../../models/group");
 
-// var groupID =1;
+// const CreateGroup = require("../../models/createGroup");
 
-router.get("/", (req, res, next) => {
-  res.status(200).json(
-    {
-      "message": "handling Get requests in groups"
-    }
-  );
-});
+// // var groupID =1;
+
+// router.get("/", (req, res, next) => {
+//   res.status(200).json(
+//     {
+//       "message": "handling Get requests in groups"
+//     }
+//   );
+// });
 
 router.post("/", (req, res, next) => {
 
-  const cg = new CreateGroup(
-    {
-      name: req.body.groups,
-      description: req.body.groups
-    }
-  );
-  cg.save()
+    //check if user exist in the group//
+ 
+    const group = new User({
+        _id: new mongoose.Types.ObjectId,
+        name: req.body.name,
+        description: req.body.description,
+        requestIDs: [],
+    });
+
+    group.save()
     .then(result => {
-      console.log(result);
-      res.status(200).json(
-        {
-          "group": {
-            "id": groupID,
-          },
-          "message": "successful",
-          "groupCreted": cg
-        }
-      );
-      // groupID+=1;
+        console.log(result);
+        return res.status(200).json({
+
+            // create id
+            "group": {
+              "id": "1"
+            },
+            "message": "successful"
+          });
     })
     .catch(err => {
-      console.log(err);
+        console.log(err);
+        return res.status(500).json({
+            "error": {
+              "message": "Bad request!"
+            }
+          });
     });
- 
 });
 
-router.post("/my", (req, res, next) => {
-  res.status(200).json(
-    {
-      "message": "handling my method requests in groups"
-    }
-  );
-});
+// router.post("/my", (req, res, next) => {
+//   res.status(200).json(
+//     {
+//       "message": "handling my method requests in groups"
+//     }
+//   );
+// });
 
 
 module.exports = router;
