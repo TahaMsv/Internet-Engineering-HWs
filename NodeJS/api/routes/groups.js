@@ -4,18 +4,10 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Group = require("../models/group");
 const checkAuth = require("../middleware/check-auth");
-const { response } = require("../../app");
-
-const myUsers = [
-    { name: 'shark', likes: 'ocean' },
-    { name: 'turtle', likes: 'pond' },
-    { name: 'otter', likes: 'fish biscuits' }
-]
-
 
 
 router.get("/", checkAuth, (req, res, next) => {
-    
+
     Group.find({}).select('-_id primaryId name description',).sort({ primaryId: 'ascending' }).exec((err, docs) => {
 
         const groupsListResponse = docs.map(item => {
@@ -23,10 +15,10 @@ router.get("/", checkAuth, (req, res, next) => {
             newMap.id = item.primaryId;
             newMap.name = item.name;
             newMap.description = item.description;
-            
+
             // container[item.name] = item.likes;
             // container.age = item.name.length * 10;
-        
+
             return newMap;
         })
 
@@ -105,48 +97,52 @@ router.post("/", checkAuth, (req, res, next) => {
                 });
             }
         });
-
-    // var numberOFGroups =0;
-    // Group.count({}, function( err, count){
-    //     numberOFGroups =count ;
-    // })
-    // const group = new User({
-    //     _id: new mongoose.Types.ObjectId,
-    //     id:numberOFGroups,
-    //     name: req.body.name,
-    //     description: req.body.description,
-    //     requestIDs: [],
-    // });
-
-    // group.save()
-    // .then(result => {
-    //     console.log(result);
-    //     return res.status(200).json({
-
-    //         // create id
-    //         "group": {
-    //           "id": "1"
-    //         },
-    //         "message": "successful"
-    //       });
-    // })
-    // .catch(err => {
-    //     console.log(err);
-    //     return res.status(500).json({
-    //         "error": {
-    //           "message": "Bad request!"
-    //         }
-    //       });
-    // });
 });
 
-// router.post("/my", (req, res, next) => {
-//   res.status(200).json(
-//     {
-//       "message": "handling my method requests in groups"
-//     }
-//   );
-// });
+router.get("/my", checkAuth, (req, res, next) => {
+
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(user => {
+            if (user.length >= 1) {
+                if (user[0].group != null) {
+                    Group.find({ primaryId: user[0].group })
+                        .exec()
+                        .then(group => {
+                            User.find({ group: group[0].primaryId }).select('-_id primaryId name isAdmin',).sort({ dateOfjoin: 'ascending' }).exec((err, members) => {
+                      
+                                const membersListResponse = members.map(item => {
+                                    const newMap = {};
+                                    newMap.id = item.primaryId;
+                                    newMap.name = item.name;
+                                    newMap.email = item.email;
+                                    newMap.rule = item.isAdmin ? "owner" : "normal";
+                                    return newMap;
+                                })
+
+                                return res.status(400).json({
+                                    "group": {
+                                        "name": group[0].name,
+                                        "description": group[0].description,
+                                        "members": membersListResponse
+                                    }
+                                });
+                            });
+
+
+                        })
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
+            } else {
+
+            }
+        })
+});
 
 
 module.exports = router;
