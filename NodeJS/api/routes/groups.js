@@ -4,14 +4,40 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Group = require("../models/group");
 const checkAuth = require("../middleware/check-auth");
+const { response } = require("../../app");
 
-// router.get("/", (req, res, next) => {
-//   res.status(200).json(
-//     {
-//       "message": "handling Get requests in groups"
-//     }
-//   );
-// });
+const myUsers = [
+    { name: 'shark', likes: 'ocean' },
+    { name: 'turtle', likes: 'pond' },
+    { name: 'otter', likes: 'fish biscuits' }
+]
+
+
+
+router.get("/", checkAuth, (req, res, next) => {
+    
+    Group.find({}).select('-_id primaryId name description',).sort({ primaryId: 'ascending' }).exec((err, docs) => {
+
+        const groupsListResponse = docs.map(item => {
+            const newMap = {};
+            newMap.id = item.primaryId;
+            newMap.name = item.name;
+            newMap.description = item.description;
+            
+            // container[item.name] = item.likes;
+            // container.age = item.name.length * 10;
+        
+            return newMap;
+        })
+
+        res.status(200).json(
+            {
+                "groups": groupsListResponse
+            }
+        );
+    });
+
+});
 
 router.post("/", checkAuth, (req, res, next) => {
     Group.find({ name: req.body.name })
@@ -35,7 +61,7 @@ router.post("/", checkAuth, (req, res, next) => {
                                         .then(result => {
                                             // user[0].group
                                             var conditions = { email: user[0].email }
-                                                , update = { group: result.primaryId };
+                                                , update = { group: result.primaryId, isAdmin: true };
                                             console.log(conditions)
                                             console.log(update)
                                             User.updateOne(conditions, update, { multi: true }).then(updatedRows => {
