@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use("/groups", grouupsRoutes);
+app.use("/api/v1/groups", grouupsRoutes);
 app.use("/chats", chatsRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/connection_requests", connectionRequestsRoutes);
@@ -47,7 +47,8 @@ app.use((error, req, res, next) => {
     res.status(error.status || 500);
     res.json({
         error: {
-            message: error.message
+            message: error.message,
+            
         }
     });
 });
