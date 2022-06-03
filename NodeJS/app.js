@@ -34,7 +34,7 @@ app.use("/api/v1/groups", grouupsRoutes);
 app.use("/chats", chatsRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/connection_requests", connectionRequestsRoutes);
-app.use("/join_requests", joinRequestsRoutes);
+app.use("/api/v1/join_requests", joinRequestsRoutes);
 
 
 app.use((req, res, next) => {

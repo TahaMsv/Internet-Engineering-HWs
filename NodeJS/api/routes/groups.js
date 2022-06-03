@@ -15,10 +15,6 @@ router.get("/", checkAuth, (req, res, next) => {
             newMap.id = item.primaryId;
             newMap.name = item.name;
             newMap.description = item.description;
-
-            // container[item.name] = item.likes;
-            // container.age = item.name.length * 10;
-
             return newMap;
         })
 
