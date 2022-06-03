@@ -33,6 +33,7 @@ router.post("/signup", (req, res, next) => {
                             email: req.body.email,
                             password: hash,
                             isAdmin: false,
+                            group:null,
                             dateOfjoin: Date.now(),
                             requestIDs: [],
                             chatsIDs: [],
@@ -44,7 +45,7 @@ router.post("/signup", (req, res, next) => {
                                 const token = jwt.sign({
                                     email: user.email,
                                     userId: user._id  // esm parametr doroste?
-                                }, process.env.JWT_KEY, {
+                                }, "secret", {
                                     expiresIn: "1h"
                                 });
                                 console.log('here50');
