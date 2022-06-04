@@ -5,7 +5,6 @@ const groupSchema = mongoose.Schema({
     primaryId:{ type: Number},
     name: { type: String},
     description: { type: String},
-    recievedConnectionRequestIDs: { type: [Number], default: [] },
 });
 
 module.exports = mongoose.model('GroupSchema', groupSchema);

@@ -6,84 +6,166 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Group = require("../models/group");
 const ConnectionRequest = require("../models/connection-request");
-// router.get("/", checkAuth, (req, res, next) => {
-//     User.find({ email: req.userData.email })
-//     .exec()
-//     .then(user => {
-//         const connectionRequestsListResponse = user[0].connectionRequestIDs.map(crId => {
-//             JoinRequest.find({ id: crId })
-//                 .exec()
-//                 .then(jr => { return jr[0]; })
-//         });
-//         const filterdList = connectionRequestsListResponse.filter(item => item.connectionRequestId != )
-//         joinRequestsListResponse.select('-_id id groupId userId date',).sort({ date: 'descending' }).exec((err, docs) => {
-//             res.status(200).json(
-//                 {
-//                     "joinRequests": docs
-//                 }
-//             );
-//         });
-//     });
-// });
+const connectionRequest = require("../models/connection-request");
+router.get("/", checkAuth, (req, res, next) => {
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(user => {
+            if (user.length >= 1) {
+                if (user[0].isAdmin) {
+                    ConnectionRequest.find({ groupId: user[0].group }).select('-_id connectionRequestId groupId sent',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
+                        res.status(200).json(
+                            {
+                                "connectionRequestId": docs
+                            }
+                        );
+                    });
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    "error": {
+                        "message": "Bad request!"
+                    }
+                });
+            }
+        });
+});
 
-// router.post("/", checkAuth, (req, res, next) => {
-//     User.find({ email: req.userData.email })
-//         .exec()
-//         .then(user => {
-//             if (user.length >= 1) {
-//                 if (user[0].isAdmin) {
-//                     Group.find({ primaryId: req.body.groupId })
-//                         .exec()
-//                         .then(group => {
-//                             ConnectionRequest.count({}, function (err, count) {
-//                                 const connectionRequest = new ConnectionRequest({
-//                                     _id: new mongoose.Types.ObjectId,
-//                                     connectionRequestId: count + 1,
-//                                     groupId: group[0].primaryId,
-//                                 });
+router.post("/", checkAuth, (req, res, next) => {
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(user => {
+            if (user.length >= 1) {
+                if (user[0].isAdmin) {
+                    Group.find({ primaryId: req.body.groupId })
+                        .exec()
+                        .then(group => {
+                            ConnectionRequest.find({ senderGroupId: user[0].group, groupId: group[0].primaryId, }).exec().then(cr => {
+                                if (cr.length < 1) {
+                                    ConnectionRequest.count({}, function (err, count) {
+                                        const connectionRequest = new ConnectionRequest({
+                                            _id: new mongoose.Types.ObjectId,
+                                            connectionRequestId: count + 1,
+                                            senderGroupId: user[0].group,
+                                            groupId: group[0].primaryId,
+                                        });
+                                        console.log("here45");
+                                        connectionRequest.save()
+                                            .then(result => {
 
-//                                 connectionRequest.save()
-//                                     .then(result => {
-//                                         user[0].connectionRequestIDs.push(result.id);
-//                                         user[0].save();
-//                                         group[0].recievedConnectionRequestIDs.push(result.id)
-//                                         return res.status(200).json({
-//                                             "message": "successful"
-//                                         });
-//                                     })
-//                                     .catch(err => {
-//                                         console.log(err);
-//                                         return res.status(400).json({
-//                                             "error": {
-//                                                 "message": "Bad request!"
-//                                             }
-//                                         });
-//                                     });
-//                             })
-//                         });
-//                 } else {
-//                     return res.status(400).json({
-//                         "error": {
-//                             "message": "Bad request!"
-//                         }
-//                     });
-//                 }
-//             } else {
-//                 return res.status(400).json({
-//                     "error": {
-//                         "message": "Bad request!"
-//                     }
-//                 });
-//             }
-//         })
-// });
+                                                return res.status(200).json({
+                                                    "message": "successful"
+                                                });
+                                            })
+                                            .catch(err => {
+                                                console.log(err);
+                                                return res.status(400).json({
+                                                    "error": {
+                                                        "message": "Bad request!"
+                                                    }
+                                                });
+                                            });
+                                    })
+                                } else {
+                                    return res.status(400).json({
+                                        "error": {
+                                            "message": "Bad request!"
+                                        }
+                                    });
+                                }
+                            })
+
+                        });
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    "error": {
+                        "message": "Bad request!"
+                    }
+                });
+            }
+        })
+});
 
 
-// router.post("/accept", checkAuth, (req, res, next) => {
-//     res.status(200).json({
-//         "message": "handling Post method requests inconnection_requests/accept"
-//     });
-// });
+router.post("/accept", checkAuth, (req, res, next) => {
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(adminUser => {
+            if (adminUser.length >= 1) {
+                if (adminUser[0].isAdmin) {
+                    ConnectionRequest.find({ connectionRequestId: req.body.connectionRequestId })
+                        .exec()
+                        .then(connectionRequest => {
+                            User.find({ group: connectionRequest[0].senderGroupId, isAdmin: true })
+                                .exec()
+                                .then(secondAdmin => {
+                                    connectionRequest[0].isAccepted = true;
+                                    connectionRequest[0].save().then(result => {
+                                        adminUser[0].groupIdsInCommon.addToSet(secondAdmin[0].group);
+                                        secondAdmin[0].groupIdsInCommon.addToSet(adminUser[0].group);
+                                        adminUser[0].groupIdsInCommon.map(item =>
+                                            {
+                                                if(secondAdmin[0].group !=item){
+                                                    secondAdmin[0].groupIdsInCommon.addToSet(item)
+                                                }
+                                                
+                                            } );
+                                        secondAdmin[0].groupIdsInCommon.map(item => {
+                                            if(adminUser[0].group !=item){
+                                                adminUser[0].groupIdsInCommon.addToSet(item);
+                                            }
+                                            
+                                        });
+                                        adminUser[0].save();
+                                        secondAdmin[0].save();
+                                        return res.status(200).json({
+                                            "message": "successful"
+                                        });
+                                    })
+                                        .catch(err => {
+                                            return res.status(400).json({
+                                                "error": {
+                                                    "message": "Bad request!"
+                                                }
+                                            });
+                                        });
+                                })
+                        }).catch(err => {
+                            return res.status(400).json({
+                                "error": {
+                                    "message": "Bad request!"
+                                }
+                            });
+                        });
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    "error": {
+                        "message": "Bad request!"
+                    }
+                });
+            }
+        });
+});
 
 
 module.exports = router;

@@ -10,8 +10,6 @@ const userSchema = mongoose.Schema({
     group: { type: Number, default: null },
     groupIdsInCommon: { type: [Number], default: [] },
     dateOfjoin: { type: Date, default: null },
-    connectionRequestIDs: { type: [Number], default: [] },
-    joinRequestIDs: { type: [Number], default: [] },
     chatsIDs: { type: [Number], default: [] },
 });
 
