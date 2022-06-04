@@ -7,9 +7,7 @@ const checkAuth = require("../middleware/check-auth");
 
 
 router.get("/", checkAuth, (req, res, next) => {
-
-    Group.find({}).select('-_id primaryId name description',).sort({ primaryId: 'ascending' }).exec((err, docs) => {
-
+    Group.find({}).select('-_id primaryId name description',).sort({ primaryId: 'descending'  }).exec((err, docs) => {
         const groupsListResponse = docs.map(item => {
             const newMap = {};
             newMap.id = item.primaryId;
@@ -17,7 +15,6 @@ router.get("/", checkAuth, (req, res, next) => {
             newMap.description = item.description;
             return newMap;
         })
-
         res.status(200).json(
             {
                 "groups": groupsListResponse
@@ -43,20 +40,15 @@ router.post("/", checkAuth, (req, res, next) => {
                                         primaryId: count + 1,
                                         name: req.body.name,
                                         description: req.body.description,
-                                        requestIDs: [],
                                     });
                                     group.save()
                                         .then(result => {
-                                            // user[0].group
                                             var conditions = { email: user[0].email }
                                                 , update = { group: result.primaryId, isAdmin: true };
-                                            console.log(conditions)
-                                            console.log(update)
                                             User.updateOne(conditions, update, { multi: true }).then(updatedRows => {
                                                 console.log(updatedRows);
                                             }).catch(err => {
                                                 console.log(err)
-
                                             })
                                             return res.status(200).json({
                                                 "group": {
@@ -96,7 +88,6 @@ router.post("/", checkAuth, (req, res, next) => {
 });
 
 router.get("/my", checkAuth, (req, res, next) => {
-
     User.find({ email: req.userData.email })
         .exec()
         .then(user => {
@@ -105,8 +96,8 @@ router.get("/my", checkAuth, (req, res, next) => {
                     Group.find({ primaryId: user[0].group })
                         .exec()
                         .then(group => {
-                            User.find({ group: group[0].primaryId }).select('-_id primaryId name isAdmin',).sort({ dateOfjoin: 'ascending' }).exec((err, members) => {
-                      
+                            User.find({ group: group[0].primaryId }).select('-_id primaryId name isAdmin',).sort({ dateOfjoin: 'descending', primaryId: 'descending' }).exec((err, members) => {
+
                                 const membersListResponse = members.map(item => {
                                     const newMap = {};
                                     newMap.id = item.primaryId;
@@ -115,7 +106,6 @@ router.get("/my", checkAuth, (req, res, next) => {
                                     newMap.rule = item.isAdmin ? "owner" : "normal";
                                     return newMap;
                                 })
-
                                 return res.status(400).json({
                                     "group": {
                                         "name": group[0].name,
@@ -124,8 +114,6 @@ router.get("/my", checkAuth, (req, res, next) => {
                                     }
                                 });
                             });
-
-
                         })
                 } else {
                     return res.status(400).json({
@@ -135,10 +123,12 @@ router.get("/my", checkAuth, (req, res, next) => {
                     });
                 }
             } else {
-
+                return res.status(400).json({
+                    "error": {
+                        "message": "Bad request!"
+                    }
+                });
             }
         })
 });
-
-
 module.exports = router;

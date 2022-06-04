@@ -13,66 +13,58 @@ router.post("/signup", (req, res, next) => {
         .exec()
         .then(user => {
             if (user.length >= 1) {
-
+            
                 return res.status(400).json({
                     "error": {
                         "message": "Bad request!"
                     }
                 });
             } else {
-
+         
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
+                  
                     if (err) {
                         return res.status(500).json({
                             "error": err
                         });
                     } else {
+                    
                         User.count({}, function (err, count) {
+                        
                             const user = new User({
                                 _id: new mongoose.Types.ObjectId,
                                 primaryId: count + 1,
                                 name: req.body.name,
                                 email: req.body.email,
                                 password: hash,
-                                isAdmin: false,
-                                group: null,
-                                dateOfjoin: Date.now(),
-                                requestIDs: [],
-                                chatsIDs: [],
                             });
-
                             user.save()
                                 .then(result => {
-                        
-
                                     const token = jwt.sign({
                                         email: user.email,
-                                        userId: user._id  // esm parametr doroste?
+                                        userId: user._id
                                     }, "secret", {
                                         expiresIn: "23h"
                                     });
-                                    console.log('here50');
+                                
                                     return res.status(200).json({
-
                                         "token": token,
                                         "message": "successful"
-
                                     });
                                 })
                                 .catch(err => {
-                                    return res.status(500).json({
-                                        "error": err
+                                    
+                                    return res.status(400).json({
+                                        "error": {
+                                            "message": "Bad request!"
+                                        }
                                     });
                                 });
                         })
-
-
                     }
                 });
             }
         })
-
-
 });
 
 router.post("/login", (req, res, next) => {
@@ -97,7 +89,7 @@ router.post("/login", (req, res, next) => {
                     if (result) {
                         const token = jwt.sign({
                             email: user[0].email,
-                            userId: user[0]._id  // esm parametr doroste?
+                            userId: user[0]._id
                         }, "secret", {
                             expiresIn: "23h"
                         });
@@ -110,14 +102,8 @@ router.post("/login", (req, res, next) => {
                     }
                 });
             }
+
         })
-
-
 });
-
-
-
-
-
 
 module.exports = router;

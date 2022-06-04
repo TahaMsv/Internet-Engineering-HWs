@@ -7,12 +7,12 @@ const userSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String },
     isAdmin: { type: Boolean, default: false },
-    group: { type: Number },
+    group: { type: Number, default: null },
     groupIdsInCommon: { type: [Number], default: [] },
-    dateOfjoin: { type: Date, default: Date.now() },
+    dateOfjoin: { type: Date, default: null },
     connectionRequestIDs: { type: [Number], default: [] },
     joinRequestIDs: { type: [Number], default: [] },
-    chatsIDs: { type: Number, default: [] },
+    chatsIDs: { type: [Number], default: [] },
 });
 
 module.exports = mongoose.model('UserSchema', userSchema);

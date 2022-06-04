@@ -1,25 +1,60 @@
 const express = require("express");
 const router = express.Router();
+const checkAuth = require("../middleware/check-auth");
+const mongoose = require("mongoose");
 
-// router.get("/", (req, res, next) => {
-//     res.status(200).json({
-//         "message": "handling Get requests in join_request"
-//     });
-// });
+const User = require("../models/user");
+const Group = require("../models/group");
+const JoinRequest = require("../models/join-request");
 
-router.post("/", (req, res, next) => {
+
+router.get("/", checkAuth, (req, res, next) => {
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(user => {
+            JoinRequest.find({ userId: user[0].primaryId }).select('-_id id groupId userId date',).sort({  date: 'descending' ,id : 'descending'}).exec((err, docs) => {
+                res.status(200).json(
+                    {
+                        "joinRequests": docs
+                    }
+                );})
+        });
+});
+
+router.post("/", checkAuth, (req, res, next) => {
 
     User.find({ email: req.userData.email })
         .exec()
         .then(user => {
             if (user.length >= 1) {
-                if (user[0].group != req.body.groupId) {
+                if (user[0].group == null) {
                     Group.find({ primaryId: req.body.groupId })
                         .exec()
                         .then(group => {
-
-
-
+                            JoinRequest.count({}, function (err, count) {
+                                const joinRequest = new JoinRequest({
+                                    _id: new mongoose.Types.ObjectId,
+                                    id: count + 1,
+                                    userId: user[0].primaryId,
+                                    groupId: group[0].primaryId,
+                                });
+                                joinRequest.save()
+                                    .then(result => {
+                                        user[0].joinRequestIDs.push(result.id);
+                                        user[0].save();
+                                        return res.status(200).json({
+                                            "message": "successful"
+                                        });
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                        return res.status(400).json({
+                                            "error": {
+                                                "message": "Bad request!"
+                                            }
+                                        });
+                                    });
+                            })
                         });
                 } else {
                     return res.status(400).json({
@@ -39,17 +74,93 @@ router.post("/", (req, res, next) => {
 
 });
 
-// router.get("/group", (req, res, next) => {
-//     res.status(200).json({
-//         "message": "handling Get method requests in join_request/group"
-//     });
-// });
+router.get("/group", checkAuth, (req, res, next) => {
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(user => {
+            if (user.length >= 1) {
+                if (user[0].isAdmin) {
+                    JoinRequest.find({ groupId: user[0].group }).select('-_id id groupId userId date',).sort({ date: 'descending' ,id : 'descending' }).exec((err, docs) => {
+                        res.status(200).json(
+                            {
+                                "joinRequests": docs
+                            }
+                        );
+                    });
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    "error": {
+                        "message": "Bad request!"
+                    }
+                });
+            }
+        })
+});
 
-// router.post("/accept", (req, res, next) => {
-//     res.status(200).json({
-//         "message": "handling Post method requests in join_request/accept"
-//     });
-// });
+router.post("/accept", checkAuth, (req, res, next) => {
+    User.find({ email: req.userData.email })
+        .exec()
+        .then(adminUser => {
+            if (adminUser.length >= 1) {
+                if (adminUser[0].isAdmin) {
+                    JoinRequest.find({ id: req.body.joinRequestId, groupId: adminUser[0].group })
+                        .exec()
+                        .then(joinRequest => {
+                            User.find({ primaryId: joinRequest[0].userId })
+                                .exec()
+                                .then(normalUser => {
+                                    if (normalUser[0].group == null) {
+                                        joinRequest[0].isAccepted = true;
+                                        joinRequest[0].save();
+
+                                        normalUser[0].group = joinRequest[0].groupId;
+                                        normalUser[0].dateOfjoin = Date.now();
+                                        normalUser[0].save();
+
+
+                                        //tarikkh join be grouh bayad taghir kone
+                                        return res.status(400).json({
+                                            "message": "successful"
+                                          });
+
+                                    } else {
+                                        return res.status(400).json({
+                                            "error": {
+                                                "message": "Bad request!"
+                                            }
+                                        });
+                                    }
+                                })
+                        }).catch(err => {
+                            return res.status(400).json({
+                                "error": {
+                                    "message": "Bad request!"
+                                }
+                            });
+                        });
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    "error": {
+                        "message": "Bad request!"
+                    }
+                });
+            }
+        })
+});
 
 
 module.exports = router;
