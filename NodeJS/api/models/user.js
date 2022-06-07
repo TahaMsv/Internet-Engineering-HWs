@@ -10,7 +10,6 @@ const userSchema = mongoose.Schema({
     group: { type: Number, default: null },
     groupIdsInCommon: { type: [Number], default: [] },
     dateOfjoin: { type: Date, default: null },
-    chatsIDs: { type: [Number], default: [] },
 });
 
 module.exports = mongoose.model('UserSchema', userSchema);

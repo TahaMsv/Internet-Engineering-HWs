@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 
 
 app.use("/api/v1/groups", grouupsRoutes);
-app.use("/chats", chatsRoutes);
+app.use("/api/v1/chats", chatsRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/connection_requests", connectionRequestsRoutes);
 app.use("/api/v1/join_requests", joinRequestsRoutes);

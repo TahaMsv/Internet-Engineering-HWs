@@ -15,7 +15,7 @@ router.get("/", checkAuth, (req, res, next) => {
             newMap.description = item.description;
             return newMap;
         })
-        res.status(200).json(
+       return res.status(200).json(
             {
                 "groups": groupsListResponse
             }

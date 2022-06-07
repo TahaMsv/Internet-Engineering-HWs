@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 
 const messageSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    sender: { type: String},
-    receiver: { type: String},
-    content: { type: String},
-    sentTime:{type: Date},
+    id: { type: Number },
+    sentby: { type: Number },
+    receiver: { type: Number },
+    message: { type: String },
+    date: { type: Date, default: Date.now() },
 });
 
 module.exports = mongoose.model('MessageSchema', messageSchema);
