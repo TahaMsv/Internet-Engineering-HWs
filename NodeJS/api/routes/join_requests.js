@@ -12,12 +12,13 @@ router.get("/", checkAuth, (req, res, next) => {
     User.find({ email: req.userData.email })
         .exec()
         .then(user => {
-            JoinRequest.find({ userId: user[0].primaryId }).select('-_id id groupId userId date',).sort({  date: 'descending' ,id : 'descending'}).exec((err, docs) => {
+            JoinRequest.find({ userId: user[0].primaryId }).select('-_id id groupId userId date',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
                 res.status(200).json(
                     {
                         "joinRequests": docs
                     }
-                );})
+                );
+            })
         });
 });
 
@@ -40,8 +41,6 @@ router.post("/", checkAuth, (req, res, next) => {
                                 });
                                 joinRequest.save()
                                     .then(result => {
-                                        user[0].joinRequestIDs.push(result.id);
-                                        user[0].save();
                                         return res.status(200).json({
                                             "message": "successful"
                                         });
@@ -80,7 +79,7 @@ router.get("/group", checkAuth, (req, res, next) => {
         .then(user => {
             if (user.length >= 1) {
                 if (user[0].isAdmin) {
-                    JoinRequest.find({ groupId: user[0].group }).select('-_id id groupId userId date',).sort({ date: 'descending' ,id : 'descending' }).exec((err, docs) => {
+                    JoinRequest.find({ groupId: user[0].group }).select('-_id id groupId userId date',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
                         res.status(200).json(
                             {
                                 "joinRequests": docs
@@ -128,7 +127,7 @@ router.post("/accept", checkAuth, (req, res, next) => {
                                         //tarikkh join be grouh bayad taghir kone
                                         return res.status(400).json({
                                             "message": "successful"
-                                          });
+                                        });
 
                                     } else {
                                         return res.status(400).json({

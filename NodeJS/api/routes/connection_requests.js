@@ -6,8 +6,6 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Group = require("../models/group");
 const ConnectionRequest = require("../models/connection-request");
-const CommonGroups = require("../models/common-groups");
-const commonGroups = require("../models/common-groups");
 const user = require("../models/user");
 router.get("/", checkAuth, (req, res, next) => {
     User.find({ email: req.userData.email })
@@ -117,85 +115,79 @@ router.post("/accept", checkAuth, (req, res, next) => {
                                 .then(secondAdmin => {
                                     if (secondAdmin.length > 0) {
                                         connectionRequest[0].isAccepted = true;
-                                        connectionRequest[0].save().then(crResult => {
-                                            console.log("here121");
-                                            console.log("adminUser[0].group: " + adminUser[0].group);
-                                            console.log("secondAdmin[0].group: " + secondAdmin[0].group);
-                                            console.log("adminUser[0].groupIdsInCommon: " + adminUser[0].groupIdsInCommon);
-                                            console.log("secondAdmin[0].groupIdsInCommon: " + secondAdmin[0].groupIdsInCommon);
+                                        connectionRequest[0].save().then(async crResult => {
                                             listToAdd1 = adminUser[0].groupIdsInCommon;
-                                            console.log("listToAdd1: " + listToAdd1);
                                             listToAdd1.addToSet(adminUser[0].group);
-                                            console.log("listToAdd1: " + listToAdd1);
                                             listToAdd2 = secondAdmin[0].groupIdsInCommon;
-                                            console.log("listToAdd2: " + listToAdd2);
                                             listToAdd2.addToSet(secondAdmin[0].group);
-                                            console.log("listToAdd2: " + listToAdd2);
-                                            console.log("listToAdd1: " + listToAdd1);
                                             listToAdd1.map(groupId => {
-                                                console.log("groupId: " + groupId);
                                                 secondAdmin[0].groupIdsInCommon.addToSet(groupId);
-                                                console.log("secondAdmin[0].groupIdsInCommon: " + secondAdmin[0].groupIdsInCommon);
                                             });
                                             listToAdd2.map(groupId => {
-                                                console.log("groupId: " + groupId);
                                                 adminUser[0].groupIdsInCommon.addToSet(groupId);
-                                                console.log("adminUser[0].groupIdsInCommon: " + adminUser[0].groupIdsInCommon);
                                             });
-                                            console.log("here128");
-                                            console.log("adminUser[0].groupIdsInCommon: " + adminUser[0].groupIdsInCommon);
-                                            console.log("secondAdmin[0].groupIdsInCommon: " + secondAdmin[0].groupIdsInCommon);
-
-                                            User.find({
+                                            const update1 = await User.find({
                                                 group: { $in: adminUser[0].groupIdsInCommon }
-                                            })
-                                                .exec()
+                                            }).exec()
                                                 .then(users => {
 
                                                     if (users.length > 0) {
+
                                                         users.map(user => {
-                                                            console.log("here143");
-                                                            var temp = [...new Set(user.groupIdsInCommon)];
-                                                            var temp2 = [...new Set(adminUser[0].groupIdsInCommon)];
-                                                            var temp3 = [...temp];
-                                                            temp3.push(...temp2);
-                                                            var temp4 = [...new Set(temp3)]
-                                                            // user.groupIdsInCommon = [];
-                                                            user.groupIdsInCommon = temp4;
-                                                            user.save();
+                                                            if (user != null) {
+
+
+                                                                var temp = [...new Set(user.groupIdsInCommon)];
+                                                                console.log("temp: " + temp);
+                                                                var temp2 = [...new Set(secondAdmin[0].groupIdsInCommon)];
+                                                                console.log("temp2: " + temp2);
+                                                                var temp3 = [...temp];
+                                                                temp3.push(...temp2);
+                                                                console.log("temp3: " + temp3);
+                                                                var temp4 = [...new Set(temp3)]
+                                                                console.log("temp4: " + temp4);
+
+                                                                temp4.map(groupId => {
+                                                                    user.groupIdsInCommon.addToSet(groupId);
+                                                                });
+
+                                                                console.log("user.groupIdsInCommon: " + user.groupIdsInCommon);
+                                                                user.save();
+                                                            }
+
                                                         })
+
                                                     }
                                                 })
 
-                                            console.log("here150");
 
-                                            User.find({
+                                            const updat2 = await User.find({
                                                 group: { $in: secondAdmin[0].groupIdsInCommon }
-                                            })
-                                                .exec()
+                                            }).exec()
                                                 .then(users => {
-                                                    // console.log(users);
                                                     if (users.length > 0) {
                                                         users.map(user => {
-                                                            console.log("here160");
-                                                            var temp = [...new Set(user.groupIdsInCommon)];
-                                                            var temp2 = [...new Set(secondAdmin[0].groupIdsInCommon)];
-                                                            var temp3 = [...temp];
-                                                            temp3.push(...temp2);
-                                                            var temp4 = [...new Set(temp3)]
-                                                            // user.groupIdsInCommon = [];
-                                                            user.groupIdsInCommon = temp4;
+                                                            if (user != null) {
+                                                                var temp = [...new Set(user.groupIdsInCommon)];
+                                                                console.log("temp: " + temp);
+                                                                var temp2 = [...new Set(adminUser[0].groupIdsInCommon)];
+                                                                console.log("temp2: " + temp2);
+                                                                var temp3 = [...temp];
+                                                                temp3.push(...temp2);
+                                                                console.log("temp3: " + temp3);
+                                                                var temp4 = [...new Set(temp3)]
+                                                                console.log("temp4: " + temp4);
+                                                                temp4.map(groupId => {
+                                                                    user.groupIdsInCommon.addToSet(groupId);
+                                                                });
+                                                                console.log("user.groupIdsInCommon: " + user.groupIdsInCommon);
+                                                                user.save();
+                                                            }
 
-                                                            user.save();
                                                         })
                                                     }
                                                 })
-                                            // }
-
-                                            console.log("here162");
-
-                                            console.log("secondAdmin[0].groupIdsInCommon: " + secondAdmin[0].groupIdsInCommon);
-                                            return res.status(400).json({
+                                            return res.status(200).json({
                                                 "message": "successful"
                                             });
                                         })

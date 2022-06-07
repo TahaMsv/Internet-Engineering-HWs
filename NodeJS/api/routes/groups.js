@@ -7,7 +7,7 @@ const checkAuth = require("../middleware/check-auth");
 
 
 router.get("/", checkAuth, (req, res, next) => {
-    Group.find({}).select('-_id primaryId name description',).sort({ primaryId: 'descending'  }).exec((err, docs) => {
+    Group.find({}).select('-_id primaryId name description',).sort({ primaryId: 'descending' }).exec((err, docs) => {
         const groupsListResponse = docs.map(item => {
             const newMap = {};
             newMap.id = item.primaryId;
@@ -15,7 +15,7 @@ router.get("/", checkAuth, (req, res, next) => {
             newMap.description = item.description;
             return newMap;
         })
-       return res.status(200).json(
+        return res.status(200).json(
             {
                 "groups": groupsListResponse
             }
@@ -25,13 +25,16 @@ router.get("/", checkAuth, (req, res, next) => {
 });
 
 router.post("/", checkAuth, (req, res, next) => {
+    console.log("here28")
     Group.find({ name: req.body.name })
         .exec()
         .then(group => {
+            console.log("here32")
             if (group.length < 1) {
                 User.find({ email: req.userData.email })
                     .exec()
                     .then(user => {
+                        console.log("here37")
                         if (user.length >= 1) {
                             if (user[0].group == null) {
                                 Group.count({}, function (err, count) {
@@ -44,7 +47,7 @@ router.post("/", checkAuth, (req, res, next) => {
                                     group.save()
                                         .then(result => {
                                             var conditions = { email: user[0].email }
-                                                , update = { group: result.primaryId, isAdmin: true };
+                                                , update = { group: result.primaryId, isAdmin: true, dateOfjoin: Date.now() };
                                             User.updateOne(conditions, update, { multi: true }).then(updatedRows => {
                                                 console.log(updatedRows);
                                             }).catch(err => {
