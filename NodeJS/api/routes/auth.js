@@ -24,8 +24,10 @@ router.post("/signup", (req, res, next) => {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
                   
                     if (err) {
-                        return res.status(500).json({
-                            "error": err
+                        return res.status(400).json({
+                            "error": {
+                                "message": "Bad request!"
+                            }
                         });
                     } else {
                     

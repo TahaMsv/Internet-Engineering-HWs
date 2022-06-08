@@ -25,69 +25,56 @@ router.get("/", checkAuth, (req, res, next) => {
 });
 
 router.post("/", checkAuth, (req, res, next) => {
-    console.log("here28")
-    Group.find({ name: req.body.name })
+
+    User.find({ email: req.userData.email })
         .exec()
-        .then(group => {
-            console.log("here32")
-            if (group.length < 1) {
-                User.find({ email: req.userData.email })
-                    .exec()
-                    .then(user => {
-                        console.log("here37")
-                        if (user.length >= 1) {
-                            if (user[0].group == null) {
-                                Group.count({}, function (err, count) {
-                                    const group = new Group({
-                                        _id: new mongoose.Types.ObjectId,
-                                        primaryId: count + 1,
-                                        name: req.body.name,
-                                        description: req.body.description,
-                                    });
-                                    group.save()
-                                        .then(result => {
-                                            var conditions = { email: user[0].email }
-                                                , update = { group: result.primaryId, isAdmin: true, dateOfjoin: Date.now() };
-                                            User.updateOne(conditions, update, { multi: true }).then(updatedRows => {
-                                                console.log(updatedRows);
-                                            }).catch(err => {
-                                                console.log(err)
-                                            })
-                                            return res.status(200).json({
-                                                "group": {
-                                                    "id": count + 1
-                                                },
-                                                "message": "successful"
-                                            });
-                                        })
-                                        .catch(err => {
-                                            console.log(err);
-                                            return res.status(400).json({
-                                                "error": {
-                                                    "message": "Bad request!"
-                                                }
-                                            });
-                                        });
+        .then(user => {
+            if (user.length >= 1) {
+                if (user[0].group == null) {
+                    Group.count({}, function (err, count) {
+                        const group = new Group({
+                            _id: new mongoose.Types.ObjectId,
+                            primaryId: count + 1,
+                            name: req.body.name,
+                            description: req.body.description,
+                        });
+                        group.save()
+                            .then(result => {
+                                var conditions = { email: user[0].email }
+                                    , update = { group: result.primaryId, isAdmin: true, dateOfjoin: Date.now() };
+                                User.updateOne(conditions, update, { multi: true }).then(updatedRows => {
+                                    console.log(updatedRows);
+                                }).catch(err => {
+                                    console.log(err)
                                 })
-                            } else {
+                                return res.status(200).json({
+                                    "group": {
+                                        "id": count + 1
+                                    },
+                                    "message": "successful"
+                                });
+                            })
+                            .catch(err => {
+                                console.log(err);
                                 return res.status(400).json({
                                     "error": {
                                         "message": "Bad request!"
                                     }
                                 });
-                            }
-                        } else {
-
-                        }
+                            });
                     })
+                } else {
+                    return res.status(400).json({
+                        "error": {
+                            "message": "Bad request!"
+                        }
+                    });
+                }
             } else {
-                return res.status(400).json({
-                    "error": {
-                        "message": "Bad request!"
-                    }
-                });
+
             }
-        });
+        })
+
 });
 
 router.get("/my", checkAuth, (req, res, next) => {
@@ -99,7 +86,7 @@ router.get("/my", checkAuth, (req, res, next) => {
                     Group.find({ primaryId: user[0].group })
                         .exec()
                         .then(group => {
-                            User.find({ group: group[0].primaryId }).select('-_id primaryId name isAdmin',).sort({ dateOfjoin: 'descending', primaryId: 'descending' }).exec((err, members) => {
+                            User.find({ group: group[0].primaryId }).select('-_id primaryId name email isAdmin',).sort({ dateOfjoin: 'descending', primaryId: 'descending' }).exec((err, members) => {
 
                                 const membersListResponse = members.map(item => {
                                     const newMap = {};
@@ -109,7 +96,7 @@ router.get("/my", checkAuth, (req, res, next) => {
                                     newMap.rule = item.isAdmin ? "owner" : "normal";
                                     return newMap;
                                 })
-                                return res.status(400).json({
+                                return res.status(200).json({
                                     "group": {
                                         "name": group[0].name,
                                         "description": group[0].description,

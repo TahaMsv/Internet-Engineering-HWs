@@ -13,9 +13,17 @@ router.get("/", checkAuth, (req, res, next) => {
         .exec()
         .then(user => {
             JoinRequest.find({ userId: user[0].primaryId }).select('-_id id groupId userId date',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
+                const requestsListResponse = docs.map(item => {
+                    const newMap = {};
+                    newMap.id = item.id;
+                    newMap.groupId = item.groupId;
+                    newMap.userId = item.userId;
+                    newMap.date = item.date;
+                    return newMap;
+                })
                 res.status(200).json(
                     {
-                        "joinRequests": docs
+                        "joinRequests": requestsListResponse
                     }
                 );
             })
@@ -32,28 +40,56 @@ router.post("/", checkAuth, (req, res, next) => {
                     Group.find({ primaryId: req.body.groupId })
                         .exec()
                         .then(group => {
-                            JoinRequest.count({}, function (err, count) {
-                                const joinRequest = new JoinRequest({
-                                    _id: new mongoose.Types.ObjectId,
-                                    id: count + 1,
-                                    userId: user[0].primaryId,
-                                    groupId: group[0].primaryId,
-                                });
-                                joinRequest.save()
-                                    .then(result => {
-                                        return res.status(200).json({
-                                            "message": "successful"
-                                        });
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                        return res.status(400).json({
-                                            "error": {
-                                                "message": "Bad request!"
+                            if (group.length > 0) {
+                                JoinRequest.find({ userId: user[0].primaryId, groupId: group[0].primaryId })
+                                    .exec()
+                                    .then(joinRequest => {
+                                        if (joinRequest.length == 0) {
+                                            JoinRequest.count({}, function (err, count) {
+                                                const joinRequest = new JoinRequest({
+                                                    _id: new mongoose.Types.ObjectId,
+                                                    id: count + 1,
+                                                    userId: user[0].primaryId,
+                                                    groupId: group[0].primaryId,
+                                                });
+                                                joinRequest.save()
+                                                    .then(result => {
+                                                        return res.status(200).json({
+                                                            "message": "successful"
+                                                        });
+                                                    })
+                                                    .catch(err => {
+                                                        console.log(err);
+                                                        return res.status(400).json({
+                                                            "error": {
+                                                                "message": "Bad request!"
+                                                            }
+                                                        });
+                                                    });
+                                            })
+                                        } else {
+                                            if(joinRequest[0].isAccepted){
+                                                return res.status(400).json({
+                                                    "error": {
+                                                        "message": "Bad request!"
+                                                    }
+                                                });
                                             }
-                                        });
-                                    });
-                            })
+                                            joinRequest[0].date = Date.now()
+                                            joinRequest[0].save();
+                                            return res.status(200).json({
+                                                "message": "successful"
+                                            });
+                                        }
+
+                                    })
+                            } else {
+                                return res.status(400).json({
+                                    "error": {
+                                        "message": "Bad request!"
+                                    }
+                                });
+                            }
                         });
                 } else {
                     return res.status(400).json({
@@ -80,9 +116,18 @@ router.get("/group", checkAuth, (req, res, next) => {
             if (user.length >= 1) {
                 if (user[0].isAdmin) {
                     JoinRequest.find({ groupId: user[0].group }).select('-_id id groupId userId date',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
+                        const requestsListResponse = docs.map(item => {
+                            const newMap = {};
+                            newMap.id = item.id;
+                            newMap.groupId = item.groupId;
+                            newMap.userId = item.userId;
+                            newMap.date = item.date;
+                            return newMap;
+                        })
+
                         res.status(200).json(
                             {
-                                "joinRequests": docs
+                                "joinRequests": requestsListResponse
                             }
                         );
                     });
@@ -115,6 +160,7 @@ router.post("/accept", checkAuth, (req, res, next) => {
                             User.find({ primaryId: joinRequest[0].userId })
                                 .exec()
                                 .then(normalUser => {
+
                                     if (normalUser[0].group == null) {
                                         joinRequest[0].isAccepted = true;
                                         joinRequest[0].save();
@@ -122,9 +168,6 @@ router.post("/accept", checkAuth, (req, res, next) => {
                                         normalUser[0].group = joinRequest[0].groupId;
                                         normalUser[0].dateOfjoin = Date.now();
                                         normalUser[0].save();
-
-
-                                        //tarikkh join be grouh bayad taghir kone
                                         return res.status(400).json({
                                             "message": "successful"
                                         });

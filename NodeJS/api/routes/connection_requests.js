@@ -13,11 +13,17 @@ router.get("/", checkAuth, (req, res, next) => {
         .then(user => {
             if (user.length >= 1) {
                 if (user[0].isAdmin) {
-
-                    ConnectionRequest.find({ groupId: user[0].group }).select('-_id connectionRequestId groupId sent',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
+                    ConnectionRequest.find({ groupId: user[0].group }).select('-_id connectionRequestId senderGroupId sent',).sort({ date: 'descending', id: 'descending' }).exec((err, docs) => {
+                         const requestsListResponse = docs.map(item => {
+                            const newMap = {};
+                            newMap.connectionRequestId = item.connectionRequestId;
+                            newMap.groupId = item.senderGroupId;
+                            newMap.sent = item.sent;
+                            return newMap;
+                        })
                         res.status(200).json(
                             {
-                                "connectionRequestId": docs
+                                "connectionRequestId": requestsListResponse
                             }
                         );
                     });
@@ -56,10 +62,8 @@ router.post("/", checkAuth, (req, res, next) => {
                                             senderGroupId: user[0].group,
                                             groupId: group[0].primaryId,
                                         });
-                                        console.log("here45");
                                         connectionRequest.save()
                                             .then(result => {
-
                                                 return res.status(200).json({
                                                     "message": "successful"
                                                 });
@@ -135,23 +139,14 @@ router.post("/accept", checkAuth, (req, res, next) => {
 
                                                         users.map(user => {
                                                             if (user != null) {
-
-
                                                                 var temp = [...new Set(user.groupIdsInCommon)];
-                                                                console.log("temp: " + temp);
                                                                 var temp2 = [...new Set(secondAdmin[0].groupIdsInCommon)];
-                                                                console.log("temp2: " + temp2);
                                                                 var temp3 = [...temp];
                                                                 temp3.push(...temp2);
-                                                                console.log("temp3: " + temp3);
                                                                 var temp4 = [...new Set(temp3)]
-                                                                console.log("temp4: " + temp4);
-
                                                                 temp4.map(groupId => {
                                                                     user.groupIdsInCommon.addToSet(groupId);
                                                                 });
-
-                                                                console.log("user.groupIdsInCommon: " + user.groupIdsInCommon);
                                                                 user.save();
                                                             }
 
@@ -159,8 +154,6 @@ router.post("/accept", checkAuth, (req, res, next) => {
 
                                                     }
                                                 })
-
-
                                             const updat2 = await User.find({
                                                 group: { $in: secondAdmin[0].groupIdsInCommon }
                                             }).exec()
@@ -169,18 +162,13 @@ router.post("/accept", checkAuth, (req, res, next) => {
                                                         users.map(user => {
                                                             if (user != null) {
                                                                 var temp = [...new Set(user.groupIdsInCommon)];
-                                                                console.log("temp: " + temp);
                                                                 var temp2 = [...new Set(adminUser[0].groupIdsInCommon)];
-                                                                console.log("temp2: " + temp2);
                                                                 var temp3 = [...temp];
                                                                 temp3.push(...temp2);
-                                                                console.log("temp3: " + temp3);
                                                                 var temp4 = [...new Set(temp3)]
-                                                                console.log("temp4: " + temp4);
                                                                 temp4.map(groupId => {
                                                                     user.groupIdsInCommon.addToSet(groupId);
                                                                 });
-                                                                console.log("user.groupIdsInCommon: " + user.groupIdsInCommon);
                                                                 user.save();
                                                             }
 
